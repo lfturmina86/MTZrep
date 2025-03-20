@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top 5 Itens por Representante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        button {
+            font-size: 16px;
+            margin: 10px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        #results {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h3>Selecione um Período para Verificar os Resultados</h3>
+    <button onclick="fetchResults(3)">Últimos 3 meses</button>
+    <button onclick="fetchResults(6)">Últimos 6 meses</button>
+    <button onclick="fetchResults(12)">Últimos 12 meses</button>
+    
+    <div id="results">
+        <h3>Top 5 Itens por Representante</h3>
+        <table id="resultsTable"></table>
+    </div>
+
+    <script>
+        function fetchResults(months) {
+            fetch('https://script.google.com/macros/s/AKfycbw8Z9giDIlBICwOngQp8k_v9xUgSV7pbRsIPLMBHqlice6G4RIpY2gkiFH7k7y8pCJv7g/exec?months=' + months, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data);
+            })
+            .catch(error => console.error('Erro ao buscar dados:', error));
+        }
+
+        function displayResults(data) {
+            const resultsTable = document.getElementById('resultsTable');
+            resultsTable.innerHTML = ''; // Limpar resultados anteriores
+            if (data && Object.keys(data).length > 0) {
+                let html = `<tr><th>Representante</th><th>Item</th><th>Valor Total</th></tr>`;
+                for (const rep in data) {
+                    html += `<tr><td colspan="3"><strong>Representante: ${rep}</strong></td></tr>`;
+                    data[rep].forEach(item => {
+                        html += `<tr><td></td><td>${item.item}</td><td>${item.value}</td></tr>`;
+                    });
+                }
+                resultsTable.innerHTML = html;
+                document.getElementById('results').style.display = 'block';
+            } else {
+                resultsTable.innerHTML = '<tr><td colspan="3">Nenhum dado encontrado.</td></tr>';
+                document.getElementById('results').style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>
